@@ -22,4 +22,21 @@ export const signupValidation = Joi.object({
     "string.min": "Password must be at least 8 characters",
     "string.empty": "Password is required",
   }),
-}); 
+
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match",
+  })
+});
+
+export const signInValidation = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Enter a valid email",
+    "string.empty": "Email is required",
+    "any.required": "Email is required",
+  }),
+  password: Joi.string().min(8).required().messages({
+    "string.min": "Password must be at least 8 characters",
+    "string.empty": "Password is required",
+    "any.required": "Password is required",
+  }),
+});
