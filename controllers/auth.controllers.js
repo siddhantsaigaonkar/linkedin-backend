@@ -1,11 +1,10 @@
-
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { genToken } from "../utils/token.js";
-import { signupValidation,signInValidation } from "../validations/auth.validation.js";
-
-
-
+import {
+  signupValidation,
+  signInValidation,
+} from "../validations/auth.validation.js";
 
 // signUp controller
 
@@ -103,7 +102,6 @@ export const signUp = async (req, res) => {
 
 export const signIn = async (req, res) => {
   try {
-
     const { error } = signInValidation.validate(req.body);
 
     if (error) {
@@ -112,19 +110,24 @@ export const signIn = async (req, res) => {
         message: error.details[0].message,
       });
     }
-    
+
     const { email, password } = req.body;
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({message:"user dose not exist !"})
+      return res.status(400).json({ message: "user dose not exist !" });
     }
-    
-    const isMatch = await bcrypt.compare(password,user.password)
+
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-     return res.status(400).json({success:false,message:"incorrect password"})
+      return res
+        .status(400)
+        .json({ success: false, message: "incorrect password" });
     }
-    
+
     const token = genToken(user._id);
+
+    console.log("Generated Token:", token);
+    console.log("Token Type:", typeof token);
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -132,40 +135,35 @@ export const signIn = async (req, res) => {
       secure: process.env.NODE_ENVIRONMENT === "production",
     });
 
-        return res.status(200).json({
-          success: true,
-          message: "Login successful",
-          user: {
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            userName: user.userName,
-          },
-        });
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        userName: user.userName,
+      },
+    });
   } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: error.message,
-        });
-
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
 
-
-// signOut controller 
+// signOut controller
 
 export const signOut = async (req, res) => {
   try {
     res.clearCookies("token");
     return res.status(200).json({
-      message:"sign out sucessfully"
-    })
-  } catch (error) {
-    
-  }
-}
-
+      message: "sign out sucessfully",
+    });
+  } catch (error) {}
+};
 
 // cheack auth
 
@@ -177,6 +175,3 @@ export const checkAuth = (req, res) => {
     cookies: req.cookies,
   });
 };
-
-
-
