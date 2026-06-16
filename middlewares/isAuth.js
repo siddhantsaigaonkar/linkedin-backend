@@ -2,7 +2,12 @@ import jwt from "jsonwebtoken";
 
 const isAuth = async (req,res,next) => {
   try {
-    let {token} = req.cookies
+        console.log("Cookies =>", req.cookies);
+
+    let { token } = req.cookies
+    console.log("Token =>", token);
+    console.log("Type =>", typeof token);
+
     if (!token) {
       return res.status(400).json({message:"user dont have token"})
     }
@@ -11,10 +16,14 @@ const isAuth = async (req,res,next) => {
       return res.status(400).json({ message: "user dont have valid token" });
     }
 
-    req.userId = verifyToken.id
+    req.userId = verifyToken.userId
+ 
     next()
   } catch (error) {
-       return res.status(500).json({ message: "isAuth error" });
+    console.log(error);
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 }
 
