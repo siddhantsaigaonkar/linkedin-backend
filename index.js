@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import authRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors"
+import userRouter from "./routes/user.routes.js";
 
 dotenv.config()
 
@@ -18,7 +19,8 @@ app.use(
     credentials:true
   }),
 );
-app.use("/api/auth",authRouter)
+app.use("/api/auth", authRouter);
+app.use("/api/user",userRouter)
 
 app.get("/", (req,res) => {
   res.send(`server started at ${port}`);
